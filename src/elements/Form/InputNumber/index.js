@@ -1,9 +1,21 @@
 import React, { useState } from "react";
+
 import propTypes from "prop-types";
+
 import "./index.scss";
 
 export default function Number(props) {
-  const { value, placeholder, name, min, max, prefix, suffix } = props;
+  const {
+    value,
+    placeholder,
+    name,
+    min,
+    max,
+    prefix,
+    suffix,
+    isSuffixPlural,
+  } = props;
+
   const [InputValue, setInputValue] = useState(`${prefix}${value}${suffix}`);
 
   const onChange = (e) => {
@@ -18,37 +30,27 @@ export default function Number(props) {
       props.onChange({
         target: {
           name: name,
-          value: -value,
+          value: +value,
         },
       });
-      setInputValue(`${prefix}${value}${suffix}`);
+      setInputValue(
+        `${prefix}${value}${suffix}${isSuffixPlural && value > 1 ? "s" : ""}`
+      );
     }
   };
 
   const minus = () => {
-    value > min &&
-      onChange({
-        target: {
-          name: name,
-          value: +value - 1,
-        },
-      });
+    value > min && onChange({ target: { name: name, value: +value - 1 } });
   };
 
   const plus = () => {
-    value < max &&
-      onChange({
-        target: {
-          name: name,
-          value: +value + 1,
-        },
-      });
+    value < max && onChange({ target: { name: name, value: +value + 1 } });
   };
 
   return (
     <div className={["input-number mb-3", props.outerClassName].join(" ")}>
       <div className="input-group">
-        <div className="input-group-prepend ">
+        <div className="input-group-prepend">
           <span className="input-group-text minus" onClick={minus}>
             -
           </span>
@@ -63,7 +65,7 @@ export default function Number(props) {
           value={String(InputValue)}
           onChange={onChange}
         />
-        <div className="input-group-append">
+        <div className="input-group-apped">
           <span className="input-group-text plus" onClick={plus}>
             +
           </span>
@@ -83,6 +85,7 @@ Number.defaultProps = {
 Number.propTypes = {
   value: propTypes.oneOfType([propTypes.string, propTypes.number]),
   onChange: propTypes.func,
+  isSuffixPlural: propTypes.bool,
   placeholder: propTypes.string,
   outerClassName: propTypes.string,
 };
